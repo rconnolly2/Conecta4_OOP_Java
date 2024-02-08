@@ -1,4 +1,5 @@
 public class Connect4 {
+  
     boolean juego_en_cur = true;
     int turno = 1;
     int[][] tablero = new int[][]{
@@ -16,7 +17,6 @@ public class Connect4 {
 
         boolean result_col = ColocarPieza(columna);
         if (result_col==false) {
-            turno = (turno==1) ? 2 : 1; // cambio de turno
             return "Column full!";
         }
 
@@ -67,16 +67,13 @@ public class Connect4 {
                     if (contador_seg==4) {
                         return true;
                     }
-
-                    if (j==tablero[0].length-1) {
-                        contador_seg=0;
-                        jugador_anterior=0;
-                    }
                 } else {
                     jugador_anterior=tablero[i][j];
                     contador_seg=1;
                 }
             }
+          jugador_anterior = 0;
+          contador_seg = 0;
         }
 
         return false;
@@ -88,19 +85,17 @@ public class Connect4 {
             for (int col=0; col<=tablero.length-1; col++) { // Itero sobre cada columna de cada fila
                 if (tablero[col][i]==jugador_anterior && tablero[col][i]!=0) {
                     contador_seg+=1;
+                  
                     if (contador_seg==4) {
                         return true;
-                    }
-
-                    if (col==tablero.length-1) { // al llegar final de columna reseteo contador
-                        contador_seg=0;
-                        jugador_anterior=0;
                     }
                 } else {
                     jugador_anterior=tablero[col][i];
                     contador_seg=1;
                 }
             }
+          jugador_anterior = 0;
+          contador_seg = 0;
         }
 
         return false;
@@ -191,15 +186,9 @@ public class Connect4 {
 
         return true;
     }
-
+    
+    
     public static void main(String[] args) {
-        Connect4 j1 = new Connect4();
-        // j1.ImpJuego();
-        // j1.ColocarPieza(0);
-        // j1.ColocarPieza(0);
-        int[] mov = new int[]{ 0, 1, 0, 1, 0, 1, 0 };
-        for (int m : mov) {
-            System.out.println(j1.play(m));
-        }
+        ;
     }
 }
