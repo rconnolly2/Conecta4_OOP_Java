@@ -1,15 +1,38 @@
 public class Connect4 {
+    boolean juego_en_cur = true;
     int turno = 1;
     int[][] tablero = new int[][]{
-        {0, 0, 0, 0, 0, 0, 1},
         {0, 0, 0, 0, 0, 0, 0},
         {0, 0, 0, 0, 0, 0, 0},
-        {0, 0, 0, 0, 0, 1, 1},
-        {0, 0, 0, 0, 1, 1, 1},
-        {0, 0, 0, 0, 0, 1, 1}};
+        {0, 0, 0, 0, 0, 0, 0},
+        {0, 0, 0, 0, 0, 0, 0},
+        {0, 0, 0, 0, 0, 0, 0},
+        {0, 0, 0, 0, 0, 0, 0}};
 
-    public void play(int columna) {
-        ImpJuego();
+    public String play(int columna) {
+        if (juego_en_cur==false) {
+            return "Game has finished!";
+        }
+
+        boolean result_col = ColocarPieza(columna);
+        if (result_col==false) {
+            turno = (turno==1) ? 2 : 1; // cambio de turno
+            return "Column full!";
+        }
+
+        // Compruebo si hay ganadores
+        if (ComprobarHorizontal()==true || ComprobarVertical()==true  || ComprobarDiagonales(turno)==true) {
+            juego_en_cur=false;
+            return "Player "+turno+" wins!";
+        } else if(TableroLleno()==true) {
+            juego_en_cur=false;
+        } else {
+            int t_ant = turno;
+            turno = (turno==1) ? 2 : 1; // cambio de turno
+            return "Player "+t_ant+" has a turn";
+        }
+
+        return "-1";
     }
 
     public void ImpJuego() {
@@ -23,15 +46,16 @@ public class Connect4 {
         }
     }
 
-    public void ColocarPieza(int fila) {
+    public boolean ColocarPieza(int fila) {
         if (fila>=0 && fila<=tablero[0].length-1) { // al ser lista empiezo desde el 0 hasta el 5 => 1-6
             for (int i=tablero.length-1; i>=0; i--) { // voy iterando desde abajo de cada fila hasta arriba
                 if (tablero[i][fila] == 0) {
                     tablero[i][fila] = turno; // pongo ficha del jugador que tiene turno
-                    break;
+                    return true; // todo correcto
                 }
             }
         }
+        return false; // columna llena!
     }
 
     public boolean ComprobarHorizontal() {
@@ -82,7 +106,77 @@ public class Connect4 {
         return false;
     }
 
-    public boolean ComprobarDiagonales() {
+    public boolean ComprobarDiagonales(int tipo_jugador) {
+        int cont_seg_der_ab=0, cont_seg_izq_arr=0, cont_seg_der_arr=0, cont_seg_izq_ab=0;
+        for (int i=0; i<=tablero.length-1; i++) {
+            for (int j=0; j<=tablero[0].length-1; j++) {
+                if (tablero[i][j] == tipo_jugador) {
+                    cont_seg_der_ab=0;
+                    cont_seg_izq_arr=0;
+                    cont_seg_der_arr=0;
+                    cont_seg_izq_ab=0;
+
+                    for (int k=1; k<=3; k++) { 
+                        // De centro der abajo
+                        if (!(i+3>tablero.length-1 || j+3>tablero[0].length-1)) {
+                            if (tablero[i+k][j+k] != tipo_jugador) {
+                                cont_seg_der_ab=0; // reseteo contador
+                            } else {
+                                cont_seg_der_ab+=1;
+                            }
+
+                            if (cont_seg_der_ab==3) {
+                                return true;
+                            }
+                        }
+
+                        // De centro izq arr
+                        if (!(i-3<0 || j-3<0)) {
+                            if (tablero[i-k][j-k] != tipo_jugador) {
+                                cont_seg_izq_arr=0; // reseteo contador
+                            } else {
+                                cont_seg_izq_arr+=1;
+                            }
+
+
+                            if (cont_seg_izq_arr==3) {
+                                return true;
+                            }
+                        }
+
+                        // De centro der arr
+                        if (!(i-3<0 || j+3>tablero[0].length-1)) {
+                            if (tablero[i-k][j+k] != tipo_jugador) {
+                                cont_seg_der_arr=0; // reseteo contador
+                            } else {
+                                cont_seg_der_arr+=1;
+                            }
+
+                            if (cont_seg_der_arr==3) {
+                                return true;
+                            }
+                        }
+
+                        // De centro izq abajo
+                        if (!(i+3>tablero.length-1 || j-3<0)) {
+                            if (tablero[i+k][j-k] != tipo_jugador) {
+                                cont_seg_izq_ab=0; // reseteo contador
+                            } else {
+                                cont_seg_izq_ab+=1;
+                            }
+
+                            if (cont_seg_izq_ab==3) {
+                                return true;
+                            }
+                        }
+                    }
+                    
+
+
+                }
+            }
+        }
+
         return false;
     }
 
@@ -103,8 +197,9 @@ public class Connect4 {
         // j1.ImpJuego();
         // j1.ColocarPieza(0);
         // j1.ColocarPieza(0);
-
-        j1.ImpJuego();
-        System.out.println(j1.ComprobarVertical());
+        int[] mov = new int[]{ 0, 1, 0, 1, 0, 1, 0 };
+        for (int m : mov) {
+            System.out.println(j1.play(m));
+        }
     }
 }
